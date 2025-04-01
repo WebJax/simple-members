@@ -64,7 +64,7 @@ class MemberFunctions {
                                 'quantity' => $quantity,
                                 'created_at' => $order_created
                             ),
-                            array('%d', '%d', '%d', '%d')
+                            array('%d', '%d', '%d', '%d', '%s')
                         );
                     }
                 }
