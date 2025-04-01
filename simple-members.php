@@ -31,6 +31,7 @@ define( 'SM_TABLE_NAME', $wpdb->prefix . 'simple_members_orders' );
 // Include required files
 require_once SM_PLUGIN_DIR . 'includes/activation.php';
 require_once SM_PLUGIN_DIR . 'includes/deactivation.php';
+require_once SM_PLUGIN_DIR . 'includes/member-functions.php';
 require_once SM_PLUGIN_DIR . 'includes/registerstylesscripts.php';
 require_once SM_PLUGIN_DIR . 'includes/userordersync.php';
 require_once SM_PLUGIN_DIR . 'includes/admin.php';

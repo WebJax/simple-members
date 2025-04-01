@@ -70,4 +70,38 @@ class MemberFunctions {
         }
     }
 
+    /**
+     * Tjek om den aktuelle bruger har mindst én af de angivne roller
+     * 
+     * @param array $roles Array med roller der skal tjekkes
+     * @return bool True hvis brugeren har mindst én af de angivne roller, ellers false
+     */
+    public static function current_user_has_roles($roles) {
+        // Tjek om brugeren er logget ind
+        if (!is_user_logged_in()) {
+            return false;
+        }
+
+        $user = wp_get_current_user();
+        
+        // Tjek om brugeren har mindst én af de angivne roller
+        foreach ($roles as $role) {
+            if (in_array($role, (array) $user->roles)) {
+                return true;
+            }
+        }
+        
+        return false;
+    }
+
+}
+
+/**
+ * Hjælpefunktion til at tjekke brugerroller globalt
+ * 
+ * @param array $roles Array med roller der skal tjekkes
+ * @return bool True hvis brugeren har mindst én af de angivne roller, ellers false
+ */
+function current_user_has_roles($roles) {
+    return MemberFunctions::current_user_has_roles($roles);
 }
