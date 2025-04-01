@@ -148,41 +148,6 @@ class SimpleMembersAdmin {
             ORDER BY o.created_at DESC",
             $start_date, $end_date
         );
-        
-        $results = $wpdb->get_results($query, ARRAY_A);
-        
-        foreach ($orders as $order) {
-            $user_id = $order->get_user_id();
-            $order_id = $order->get_id();
-            $created_at = $order->get_date_created()->date('Y-m-d H:i:s');
-            
-            // Get user data
-            $user = get_userdata($user_id);
-            if (!$user) continue;
-            
-            $first_name = get_user_meta($user_id, 'billing_first_name', true);
-            $last_name = get_user_meta($user_id, 'billing_last_name', true);
-            
-            // Get order items
-            foreach ($order->get_items() as $item) {
-            $product_id = $item->get_product_id();
-            $product = wc_get_product($product_id);
-            if (!$product) continue;
-            
-            $results[] = array(
-                'user_id' => $user_id,
-                'order_id' => $order_id,
-                'product_id' => $product_id,
-                'quantity' => $item->get_quantity(),
-                'created_at' => $created_at,
-                'user_email' => $user->user_email,
-                'display_name' => $user->display_name,
-                'first_name' => $first_name,
-                'last_name' => $last_name,
-                'product_name' => $product->get_name()
-            );
-            }
-        }
     
         $results = $wpdb->get_results($query, ARRAY_A);
     
