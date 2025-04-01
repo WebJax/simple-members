@@ -104,8 +104,8 @@ class SimpleMembersAdmin {
         $start_date = isset($_GET['csv_start_date']) ? $_GET['csv_start_date'] : null;
         $end_date = isset($_GET['csv_end_date']) ? $_GET['csv_end_date'] : null;
     
-        $export = new UserOrderSync();
-        $export->generate_csv($start_date, $end_date);
+        $member_operations = new MemberOperations();
+        $member_operations->generate_csv($start_date, $end_date);
     }
 
     public function members_table() {
@@ -384,7 +384,7 @@ class SimpleMembersAdmin {
             <?php 
             // Hent alle medlemsordre når der klikke på en knap
             if (isset($_POST['get_all_orders'])) {
-                MemberFunctions::update_user_orders();
+                MemberOperations::update_user_orders();
                 echo '<div class="notice notice-success"><p>Alle medlemsordrer er blevet opdateret.</p></div>';
             }
             ?>
