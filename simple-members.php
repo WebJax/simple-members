@@ -33,7 +33,13 @@ require_once SM_PLUGIN_DIR . 'includes/activation.php';
 require_once SM_PLUGIN_DIR . 'includes/deactivation.php';
 require_once SM_PLUGIN_DIR . 'includes/class-member-operations.php';
 require_once SM_PLUGIN_DIR . 'includes/registerstylesscripts.php';
-require_once SM_PLUGIN_DIR . 'includes/admin.php';
+
+// Include admin files
+require_once SM_PLUGIN_DIR . 'includes/class-admin-menu.php';
+require_once SM_PLUGIN_DIR . 'includes/class-member-table.php';
+require_once SM_PLUGIN_DIR . 'includes/class-member-export.php';
+require_once SM_PLUGIN_DIR . 'includes/class-subscription-manager.php';
+require_once SM_PLUGIN_DIR . 'includes/class-settings.php';
 
 class SimpleMembers {
     public function __construct() {
@@ -44,10 +50,18 @@ class SimpleMembers {
     public function init() {
         // Load the styles and scripts
         new SimpleMembersRegisterStylesScripts();
+        
         // Load the member operations class
         new MemberOperations();
-        // Load the admin class
-        new SimpleMembersAdmin();
+        
+        // Load admin classes
+        if ( is_admin() ) {
+            new AdminMenu();
+            new MemberTable();
+            new MemberExport();
+            new SubscriptionManager();
+            new Settings();
+        }
     }
 }
 
