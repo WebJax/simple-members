@@ -52,6 +52,7 @@ class MemberFunctions {
                         /** @var WC_Order_Item_Product $item */
                         $product_id = $item->get_product_id();
                         $quantity = $item->get_quantity();
+                        $order_created = $order->get_date_created()->date('Y-m-d H:i:s');
 
                         // Indsæt data i tabellen
                         $wpdb->insert(
@@ -60,7 +61,8 @@ class MemberFunctions {
                                 'user_id' => $user_id,
                                 'order_id' => $order_id,
                                 'product_id' => $product_id,
-                                'quantity' => $quantity
+                                'quantity' => $quantity,
+                                'created_at' => $order_created
                             ),
                             array('%d', '%d', '%d', '%d')
                         );

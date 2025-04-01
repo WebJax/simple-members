@@ -371,9 +371,7 @@ class SimpleMembersAdmin {
             // Hent alle medlemsordre når der klikke på en knap
             if (isset($_POST['get_all_orders'])) {
                 MemberFunctions::update_user_orders();
-                add_action('admin_notices', function() {
-                    echo '<div class="notice notice-success"><p>Alle medlemsordrer er blevet opdateret.</p></div>';
-                });
+                echo '<div class="notice notice-success"><p>Alle medlemsordrer er blevet opdateret.</p></div>';
             }
             ?>
             <form method="post">
