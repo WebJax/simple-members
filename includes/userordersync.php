@@ -43,6 +43,7 @@ if (!class_exists('UserOrderSync')) {
                     $product = $item->get_product();
                     $product_id = $product ? $product->get_id() : 0;
                     $quantity = $item->get_quantity();
+                    $order_created = $order->get_date_created()->date('Y-m-d H:i:s');
 
                     // Indsæt i databasen
                     $wpdb->insert(
@@ -51,7 +52,8 @@ if (!class_exists('UserOrderSync')) {
                             'user_id' => $user_id,
                             'order_id' => $order_id,
                             'product_id' => $product_id,
-                            'quantity' => $quantity
+                            'quantity' => $quantity,
+                            'created_at' => $order_created
                         ),
                         array('%d', '%d', '%d', '%d')
                     );
