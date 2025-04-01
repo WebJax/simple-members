@@ -132,19 +132,48 @@ class SimpleMembersAdmin {
         $start_date = isset($_GET['members_start_date']) ? $_GET['members_start_date'] : date('Y-m-01');
         $end_date = isset($_GET['members_end_date']) ? $_GET['members_end_date'] : date('Y-m-d');
     
-        $query = $wpdb->prepare("
-            SELECT uo.user_id, uo.order_id, uo.product_id, uo.quantity, uo.created_at,
-                u.user_email, u.display_name, um1.meta_value as first_name, um2.meta_value as last_name,
-                p.post_title as product_name
-            FROM {SM_TABLE_NAME} uo
-            JOIN {$wpdb->users} u ON uo.user_id = u.ID
-            JOIN {$wpdb->usermeta} um1 ON uo.user_id = um1.user_id AND um1.meta_key = 'billing_first_name'
-            JOIN {$wpdb->usermeta} um2 ON uo.user_id = um2.user_id AND um2.meta_key = 'billing_last_name'
-            JOIN {$wpdb->posts} p ON uo.product_id = p.ID
-            WHERE uo.created_at BETWEEN %s AND %s
-            ORDER BY uo.created_at DESC",
-            $start_date, $end_date
+        // Get orders within the date range
+        $args = array(
+            'date_created' => $start_date . '...' . $end_date,
+            'limit' => -1,
+            'return' => 'objects',
         );
+        
+        $results = array();
+        $orders = wc_get_orders($args);
+        
+        foreach ($orders as $order) {
+            $user_id = $order->get_user_id();
+            $order_id = $order->get_id();
+            $created_at = $order->get_date_created()->date('Y-m-d H:i:s');
+            
+            // Get user data
+            $user = get_userdata($user_id);
+            if (!$user) continue;
+            
+            $first_name = get_user_meta($user_id, 'billing_first_name', true);
+            $last_name = get_user_meta($user_id, 'billing_last_name', true);
+            
+            // Get order items
+            foreach ($order->get_items() as $item) {
+            $product_id = $item->get_product_id();
+            $product = wc_get_product($product_id);
+            if (!$product) continue;
+            
+            $results[] = array(
+                'user_id' => $user_id,
+                'order_id' => $order_id,
+                'product_id' => $product_id,
+                'quantity' => $item->get_quantity(),
+                'created_at' => $created_at,
+                'user_email' => $user->user_email,
+                'display_name' => $user->display_name,
+                'first_name' => $first_name,
+                'last_name' => $last_name,
+                'product_name' => $product->get_name()
+            );
+            }
+        }
     
         $results = $wpdb->get_results($query, ARRAY_A);
     
