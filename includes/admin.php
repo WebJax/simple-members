@@ -46,6 +46,15 @@ class SimpleMembersAdmin {
             'subscription_manager',
             array( $this, 'render_subscription_manager_page' )
         );
+
+        add_submenu_page(
+            'simple_members',
+            __( 'Indstillinger', 'simple-members' ),
+            __( 'Vælg indstillinger', 'simple-members' ),
+            'manage_options',
+            'subscription_manager',
+            array( $this, 'render_settings_page' )
+        );
     }
 
     /**
@@ -314,5 +323,64 @@ class SimpleMembersAdmin {
                 echo '<div class="notice notice-success"><p>Abonnement er blevet fornyet.</p></div>';
             }
         }
+    }
+
+    public function render_settings_page() {
+        // Check if user is logged in and has the required capability
+        if ( ! is_user_logged_in() || ! current_user_has_roles( array ('boardmember', 'administrator') ) ) {
+            return '<p>' . __( 'You do not have permission to view this content.', 'simple-members' ) . '</p>';
+        }
+        // Save settings if form is submitted
+        if (isset($_POST['action']) && $_POST['action'] == 'save_membership_settings') {
+            check_admin_referer('simple_members_nonce');
+            $membership_products = isset($_POST['membership_products']) ? $_POST['membership_products'] : [];
+            update_option('membership_products', $membership_products);
+            echo '<div class="notice notice-success"><p>Indstillinger gemt.</p></div>';
+        }
+        // Get saved membership products
+        $membership_products = get_option('membership_products', []);        
+        ?>
+        <section class="wrap">
+            <h2>Indstillinger</h2>
+            <form method="post" action="">
+                <!-- Vælg hvilke produkter der skal anvendes som medlemskaber -->
+                <label for="membership_products">Vælg medlemskaber:</label>
+                <select name="membership_products[]" id="membership_products" multiple>
+                    <?php
+                    // Hent alle produkter
+                    $products = get_posts(array(
+                        'post_type' => 'product',
+                        'posts_per_page' => -1,
+                    ));
+                    foreach ($products as $product) {
+                        $selected = in_array($product->ID, $membership_products) ? 'selected' : '';
+                        echo '<option value="' . esc_attr($product->ID) . '" ' . $selected . '>' . esc_html($product->post_title) . '</option>';
+                    }
+                    ?>
+                </select>
+                <p>Vælg de produkter, der skal anvendes som medlemskaber. Hold Ctrl-tasten nede for at vælge flere.</p>
+                <input type="hidden" name="action" value="save_membership_settings">
+                <input type="hidden" name="page" value="simple_members">
+                <input type="hidden" name="simple_members_nonce" value="<?php echo wp_create_nonce('simple_members_nonce'); ?>">
+                <input type="submit" class="button button-primary" value="Gem indstillinger">
+            </form>
+        </section>
+        <section class="wrap">
+            <h2>Hent alle medlemsordre</h2>
+            <?php 
+            // Hent alle medlemsordre når der klikke på en knap
+            if (isset($_POST['get_all_orders'])) {
+                MemberFunctions::update_user_orders();
+                add_action('admin_notices', function() {
+                    echo '<div class="notice notice-success"><p>Alle medlemsordrer er blevet opdateret.</p></div>';
+                });
+            }
+            ?>
+            <form method="post">
+                <input type="hidden" name="get_all_orders" value="1">
+                <input type="submit" class="button button-primary" value="Hent alle medlemsordre">
+            </form>
+        </section>
+        <?php
     }
 }
