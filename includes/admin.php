@@ -138,12 +138,14 @@ class SimpleMembersAdmin {
                u.user_email, u.display_name, 
                um1.meta_value as first_name, 
                um2.meta_value as last_name,
-               p.post_title as product_name
+               p.post_title as product_name,
+               op.post_status as order_status
             FROM " . SM_TABLE_NAME . " o
             LEFT JOIN {$wpdb->users} u ON o.user_id = u.ID
             LEFT JOIN {$wpdb->usermeta} um1 ON o.user_id = um1.user_id AND um1.meta_key = 'billing_first_name'
             LEFT JOIN {$wpdb->usermeta} um2 ON o.user_id = um2.user_id AND um2.meta_key = 'billing_last_name'
             LEFT JOIN {$wpdb->posts} p ON o.product_id = p.ID
+            LEFT JOIN {$wpdb->posts} op ON o.order_id = op.ID
             WHERE o.created_at BETWEEN %s AND %s
             ORDER BY o.created_at DESC",
             $start_date, $end_date
@@ -157,7 +159,7 @@ class SimpleMembersAdmin {
         }
     
         echo '<table class="widefat striped">';
-        echo '<thead><tr><th>Bruger</th><th>Email</th><th>Ordre ID</th><th>Produkt</th><th>Antal</th><th>Dato</th></tr></thead><tbody>';
+        echo '<thead><tr><th>Medlem</th><th>Email</th><th>Ordre ID</th><th>Produkt</th><th>Antal</th><th>Købsdato</th><th>Status</th></tr></thead><tbody>';
     
         foreach ($results as $row) {
             echo '<tr>';
@@ -167,6 +169,15 @@ class SimpleMembersAdmin {
             echo '<td>' . esc_html($row['product_name']) . '</td>';
             echo '<td>' . esc_html($row['quantity']) . '</td>';
             echo '<td>' . esc_html($row['created_at']) . '</td>';
+            
+            // Format order status for display - remove 'wc-' prefix and capitalize
+            $status = $row['order_status'];
+            if (strpos($status, 'wc-') === 0) {
+                $status = substr($status, 3);
+            }
+            $status_label = wc_get_order_status_name($status);
+            
+            echo '<td>' . esc_html($status_label) . '</td>';
             echo '</tr>';
         }
     
