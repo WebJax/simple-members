@@ -17,8 +17,14 @@ class MemberStatistics {
      * Constructor
      */
     public function __construct() {
-        add_action('wp_ajax_get_members_stats', array( $this, 'get_members_stats' ) );
+        // Registrer AJAX handler til at hente månedlige salgsdata
         add_action('wp_ajax_get_order_stats', array( $this, 'get_order_stats' ) );
+        
+        // Registrer AJAX handler til medlemsvækst
+        add_action('wp_ajax_get_members_growth', array($this, 'ajax_get_members_growth'));
+
+        // Registrer AJAX handler til medlemsflow
+        add_action('wp_ajax_get_members_flow', array($this, 'ajax_get_members_flow'));
     }
 
     /**
@@ -44,6 +50,47 @@ class MemberStatistics {
         
         wp_send_json_success($data);
     }
+
+        /**
+     * AJAX handler for at hente data til den akkumulerede medlemsvækstgraf
+     */
+    public function ajax_get_members_growth() {
+        // Sikkerhedscheck
+        if (!current_user_can('manage_options')) {
+            wp_send_json_error('Ikke tilstrækkelige rettigheder');
+        }
+        
+        $members_ops = new MemberOperations();
+        
+        // Få produkt-IDs fra indstillinger
+        $product_ids = get_option('simple_members_product_ids', array());
+        
+        // Hent den akkumulerede medlemsvækst
+        $growth_data = $members_ops->get_accumulated_members_growth($product_ids);
+        
+        wp_send_json_success($growth_data);
+    }
+    
+    /**
+     * AJAX handler for at hente data til medlemsflow-grafen
+     */
+    public function ajax_get_members_flow() {
+        // Sikkerhedscheck
+        if (!current_user_can('manage_options')) {
+            wp_send_json_error('Ikke tilstrækkelige rettigheder');
+        }
+        
+        $members_ops = new MemberOperations();
+        
+        // Få produkt-IDs fra indstillinger
+        $product_ids = get_option('simple_members_product_ids', array());
+        
+        // Hent medlemsflow data
+        $flow_data = $members_ops->get_monthly_members_flow($product_ids);
+        
+        wp_send_json_success($flow_data);
+    }
+
 
     /**
      * Hovedside for medlemsstatistik

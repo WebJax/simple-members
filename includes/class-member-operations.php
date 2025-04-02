@@ -280,6 +280,212 @@ class MemberOperations {
     }
 
     /**
+     * Henter den akkumulerede medlemsvækst måned for måned for det seneste år.
+     * Viser fremgang og tilbagegang i det samlede antal af medlemmer over tid.
+     *
+     * @param int|array $product_ids Produkt-ID eller array af produkt-IDs som definerer medlemskab
+     * @return array Associeret array med måneder som nøgler og akkumulerede medlemstal som værdier
+     */
+    public function get_accumulated_members_growth($product_ids = null) {
+        global $wpdb;
+
+        // Konverter enkelt produkt-ID til array hvis nødvendigt
+        if (!is_array($product_ids) && !is_null($product_ids)) {
+            $product_ids = array($product_ids);
+        }
+        
+        // To år siden (for at sikre, at vi har et komplet billede)
+        $two_years_ago = date('Y-m-d', strtotime('-2 years'));
+        $today = date('Y-m-d');
+        
+        // Forbereder WHERE-betingelse for produkter
+        $product_where = '';
+        if (!is_null($product_ids) && !empty($product_ids)) {
+            $placeholders = implode(',', array_fill(0, count($product_ids), '%d'));
+            $product_where = $wpdb->prepare("AND product_id IN ($placeholders) ", $product_ids);
+        }
+        
+        // SQL-forespørgsel til at hente hver brugers første køb dato og seneste fornyelse
+        // Dette vil give os "tilgang" og "afgang" af medlemmer
+        $query = $wpdb->prepare(
+            "SELECT 
+                user_id, 
+                MIN(created_at) as first_purchase,
+                MAX(created_at) as last_purchase
+            FROM 
+                {$wpdb->prefix}simple_members_orders
+            WHERE 
+                created_at BETWEEN %s AND %s
+                $product_where
+            GROUP BY user_id",
+            $two_years_ago,
+            $today
+        );
+        
+        $results = $wpdb->get_results($query);
+        
+        if (empty($results)) {
+            return array();
+        }
+        
+        // Initialiser arrays for hver måned
+        $start_date = new DateTime($two_years_ago);
+        $end_date = new DateTime();
+        $interval = new DateInterval('P1M');
+        $period = new DatePeriod($start_date, $interval, $end_date);
+        
+        $monthly_new_members = array();
+        $monthly_lost_members = array();
+        
+        // Initialiser alle måneder med 0 værdi
+        foreach ($period as $date) {
+            $month_key = $date->format('Y-m');
+            $monthly_new_members[$month_key] = 0;
+            $monthly_lost_members[$month_key] = 0;
+        }
+        
+        // Tilføj nye medlemmer baseret på første køb
+        foreach ($results as $member) {
+            $first_date = new DateTime($member->first_purchase);
+            $month_key = $first_date->format('Y-m');
+            
+            if (isset($monthly_new_members[$month_key])) {
+                $monthly_new_members[$month_key]++;
+            }
+            
+            // Beregn medlemskabets udløbsdato (1 år efter sidste køb)
+            $last_purchase = new DateTime($member->last_purchase);
+            $expiry_date = clone $last_purchase;
+            $expiry_date->add(new DateInterval('P1Y'));
+            
+            // Hvis udløbsdatoen ligger i fortiden eller inden for perioden, 
+            // registrer medlemmet som tabt i udløbsmåneden
+            if ($expiry_date <= $end_date) {
+                $expiry_month_key = $expiry_date->format('Y-m');
+                if (isset($monthly_lost_members[$expiry_month_key])) {
+                    $monthly_lost_members[$expiry_month_key]++;
+                }
+            }
+        }
+        
+        // Beregn den akkumulerede vækst
+        $accumulated_growth = array();
+        $total_members = 0;
+        
+        // Vi tager kun data for det seneste år
+        $one_year_ago = date('Y-m', strtotime('-1 year'));
+        
+        foreach ($monthly_new_members as $month => $new_count) {
+            // Spring over måneder før det seneste år
+            if ($month < $one_year_ago) {
+                $total_members += $new_count - $monthly_lost_members[$month];
+                continue;
+            }
+            
+            $total_members += $new_count - $monthly_lost_members[$month];
+            $accumulated_growth[$month] = $total_members;
+        }
+        
+        // Debug output
+        error_log('Accumulated members growth: ' . print_r($accumulated_growth, true));
+        
+        return $accumulated_growth;
+    }
+
+    /**
+     * Henter det månedlige antal nye medlemmer og mistede medlemmer for det seneste år.
+     * Kan bruges til at visualisere medlemsflow (tilgang vs. afgang).
+     *
+     * @param int|array $product_ids Produkt-ID eller array af produkt-IDs som definerer medlemskab
+     * @return array Associeret array med måneder og arrays af nye og mistede medlemmer
+     */
+    public function get_monthly_members_flow($product_ids = null) {
+        global $wpdb;
+
+        // Konverter enkelt produkt-ID til array hvis nødvendigt
+        if (!is_array($product_ids) && !is_null($product_ids)) {
+            $product_ids = array($product_ids);
+        }
+        
+        // To år siden (for at kunne beregne tab af medlemmer præcist)
+        $two_years_ago = date('Y-m-d', strtotime('-2 years'));
+        $today = date('Y-m-d');
+        $one_year_ago = date('Y-m', strtotime('-1 year'));
+        
+        // Forbereder WHERE-betingelse for produkter
+        $product_where = '';
+        if (!is_null($product_ids) && !empty($product_ids)) {
+            $placeholders = implode(',', array_fill(0, count($product_ids), '%d'));
+            $product_where = $wpdb->prepare("AND product_id IN ($placeholders) ", $product_ids);
+        }
+        
+        // SQL-forespørgsel som i get_accumulated_members_growth
+        $query = $wpdb->prepare(
+            "SELECT 
+                user_id, 
+                MIN(created_at) as first_purchase,
+                MAX(created_at) as last_purchase
+            FROM 
+                {$wpdb->prefix}simple_members_orders
+            WHERE 
+                created_at BETWEEN %s AND %s
+                $product_where
+            GROUP BY user_id",
+            $two_years_ago,
+            $today
+        );
+        
+        $results = $wpdb->get_results($query);
+        
+        if (empty($results)) {
+            return array();
+        }
+        
+        // Initialiser arrays for hver måned
+        $start_date = new DateTime($one_year_ago . '-01');
+        $end_date = new DateTime();
+        $interval = new DateInterval('P1M');
+        $period = new DatePeriod($start_date, $interval, $end_date);
+        
+        $monthly_flow = array();
+        
+        // Initialiser alle måneder med 0 værdi
+        foreach ($period as $date) {
+            $month_key = $date->format('Y-m');
+            $monthly_flow[$month_key] = array(
+                'new' => 0,
+                'lost' => 0
+            );
+        }
+        
+        // Tilføj medlemsdata
+        foreach ($results as $member) {
+            $first_date = new DateTime($member->first_purchase);
+            $first_month_key = $first_date->format('Y-m');
+            
+            if (isset($monthly_flow[$first_month_key])) {
+                $monthly_flow[$first_month_key]['new']++;
+            }
+            
+            // Beregn medlemskabets udløbsdato (1 år efter sidste køb)
+            $last_purchase = new DateTime($member->last_purchase);
+            $expiry_date = clone $last_purchase;
+            $expiry_date->add(new DateInterval('P1Y'));
+            
+            // Hvis udløbsdatoen ligger inden for perioden, 
+            // registrer medlemmet som tabt i udløbsmåneden
+            if ($expiry_date <= $end_date) {
+                $expiry_month_key = $expiry_date->format('Y-m');
+                if (isset($monthly_flow[$expiry_month_key])) {
+                    $monthly_flow[$expiry_month_key]['lost']++;
+                }
+            }
+        }
+        
+        return $monthly_flow;
+    }
+
+    /**
      * Generer og download CSV-fil med brugerdata
      *
      * @param string $start_date Start dato for data
