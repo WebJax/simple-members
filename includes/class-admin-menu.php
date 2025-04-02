@@ -118,11 +118,11 @@ class AdminMenu {
         <section class="wrap">
             <h2><?php _e( 'Muligheder', 'simple-members' ); ?></h2>
             <ul>
-                <li><a href="<?php echo admin_url('admin.php?page=edit_members'); ?>"><?php _e( 'Rediger medlemmer', 'simple-members' ); ?></a></li>
-                <li><a href="<?php echo admin_url('admin.php?page=subscription_manager'); ?>"><?php _e( 'Abonnementer', 'simple-members' ); ?></a></li>
-                <li><a href="<?php echo admin_url('admin.php?page=statistics'); ?>"><?php _e( 'Statistik', 'simple-members' ); ?></a></li>
-                <li><a href="<?php echo admin_url('admin.php?page=get_csv'); ?>"><?php _e( 'Hent CSV', 'simple-members' ); ?></a></li>
-                <li><a href="<?php echo admin_url('admin.php?page=membership_settings'); ?>"><?php _e( 'Indstillinger', 'simple-members' ); ?></a></li>
+                <li><a href="<?php echo admin_url('admin.php?page=edit_members'); ?>" class="button"><?php _e( 'Rediger medlemmer', 'simple-members' ); ?></a></li>
+                <li><a href="<?php echo admin_url('admin.php?page=subscription_manager'); ?>" class="button"><?php _e( 'Abonnementer', 'simple-members' ); ?></a></li>
+                <li><a href="<?php echo admin_url('admin.php?page=statistics'); ?>" class="button"><?php _e( 'Statistik', 'simple-members' ); ?></a></li>
+                <li><a href="<?php echo admin_url('admin.php?page=get_csv'); ?>" class="button"><?php _e( 'Hent CSV', 'simple-members' ); ?></a></li>
+                <li><a href="<?php echo admin_url('admin.php?page=membership_settings'); ?>" class="button"><?php _e( 'Indstillinger', 'simple-members' ); ?></a></li>
             </ul>
             <p><?php _e( 'Vælg en mulighed ovenfor for at administrere medlemmer, abonnementer eller indstillinger.', 'simple-members' ); ?></p>
         </section>
