@@ -69,7 +69,7 @@ class Settings {
         <section class="wrap">
             <h2>Hent alle medlemsordre</h2>
             <?php 
-            // Hent alle medlemsordre når der klikke på en knap
+            // Hent alle medlemsordre når der klikkes på en knap
             if (isset($_POST['get_all_orders'])) {
                 MemberOperations::update_user_orders();
                 echo '<div class="notice notice-success"><p>Alle medlemsordrer er blevet opdateret.</p></div>';
