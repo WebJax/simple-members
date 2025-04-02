@@ -39,6 +39,7 @@ require_once SM_PLUGIN_DIR . 'includes/class-admin-menu.php';
 require_once SM_PLUGIN_DIR . 'includes/class-member-table.php';
 require_once SM_PLUGIN_DIR . 'includes/class-member-export.php';
 require_once SM_PLUGIN_DIR . 'includes/class-subscription-manager.php';
+require_once SM_PLUGIN_DIR . 'includes/class-member-statistics.php';
 require_once SM_PLUGIN_DIR . 'includes/class-settings.php';
 
 class SimpleMembers {
@@ -60,6 +61,7 @@ class SimpleMembers {
             new MemberTable();
             new MemberExport();
             new SubscriptionManager();
+            new MemberStatistics();
             new Settings();
         }
     }
