@@ -52,7 +52,7 @@ class MemberTable {
             <h2>Medlemmer</h2>
             <form method="get">
                 <input type="hidden" name="page" value="edit_members">
-                <label for="members_start_date">Startdato: <input type="date" name="members_start_date" value="<?php echo isset($_GET['members_start_date']) ? esc_attr($_GET['members_start_date']) : date('Y-m-01'); ?>"></label>
+                <label for="members_start_date">Startdato: <input type="date" name="members_start_date" value="<?php echo isset($_GET['members_start_date']) ? esc_attr($_GET['members_start_date']) : date('Y-m-d', strtotime('-1 year')); ?>"></label>
                 <label for="members_end_date">Slutdato: <input type="date" name="members_end_date" value="<?php echo isset($_GET['members_end_date']) ? esc_attr($_GET['members_end_date']) : date('Y-m-d'); ?>"></label>
                 <input type="submit" class="button button-primary" value="Opdater">
             </form>
@@ -97,8 +97,8 @@ class MemberTable {
             return;
         }
     
-        echo '<table class="widefat striped">';
-        echo '<thead><tr><th>Medlem</th><th>Email</th><th>Ordre ID</th><th>Produkt</th><th>Antal</th><th>Købsdato</th><th>Status</th></tr></thead><tbody>';
+        echo '<table class="widefat striped members-table">';
+        echo '<thead class="members-table-header"><tr><th>Medlem</th><th>Email</th><th>Ordre ID</th><th>Produkt</th><th>Antal</th><th>Købsdato</th><th>Status</th></tr></thead><tbody>';
     
         foreach ($results as $row) {
             echo '<tr>';

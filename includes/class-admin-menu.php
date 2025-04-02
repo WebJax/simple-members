@@ -117,7 +117,7 @@ class AdminMenu {
         </section>
         <section class="wrap">
             <h2><?php _e( 'Muligheder', 'simple-members' ); ?></h2>
-            <ul>
+            <ul class="member-options">
                 <li><a href="<?php echo admin_url('admin.php?page=edit_members'); ?>" class="button"><?php _e( 'Rediger medlemmer', 'simple-members' ); ?></a></li>
                 <li><a href="<?php echo admin_url('admin.php?page=subscription_manager'); ?>" class="button"><?php _e( 'Abonnementer', 'simple-members' ); ?></a></li>
                 <li><a href="<?php echo admin_url('admin.php?page=statistics'); ?>" class="button"><?php _e( 'Statistik', 'simple-members' ); ?></a></li>

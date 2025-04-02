@@ -1,0 +1,65 @@
+ul.member-options {
+    display: flex;
+    gap: 10px;
+}
+
+.members-table {
+    position: relative;
+}
+.members-table .members-table-header {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+}
+.members-table .members-table-header th {
+    background: #f9f9f9;
+    border-bottom: 2px solid #ddd;
+}
+.members-table .members-table-header th,
+.members-table .members-table-header th a {
+    color: #333;
+}
+.members-table .members-table-header th a {
+    text-decoration: none;
+}
+.members-table .members-table-header th a:hover {
+    text-decoration: underline;
+}
+.members-table .members-table-header th a.active {
+    text-decoration: underline;
+}
+.members-table .members-table-header th a.active:hover {
+    text-decoration: none;
+}
+.members-table .members-table-header th a.active {
+    color: #0073aa;
+}
+.members-table .members-table-header th a.active:hover {
+    color: #005177;
+}
+.members-table .members-table-header th a.active:after {
+    content: '';
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%230073aa"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/></svg>') no-repeat center center;
+}
+.members-table .members-table-header th a.active:before {
+    content: '';
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%230073aa"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/></svg>') no-repeat center center;
+}
+.members-table .members-table-header th a.active:after {
+    margin-left: 5px;
+}
+.members-table .members-table-header th a.active:before {
+    margin-right: 5px;
+}
+.members-table .members-table-header th a.active:after {
+    transform: rotate(180deg);
+}
+.members-table .members-table-header th a.active:before {
+    transform: rotate(180deg);
+}
