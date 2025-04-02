@@ -39,8 +39,7 @@ class MemberStatistics {
         
         $data = array(
             'labels' => array_keys($monthly_data),
-            'orders' => array_values($monthly_data),
-            'products' => array_values($monthly_data)
+            'products_sold' => array_values($monthly_data)
         );
         
         wp_send_json_success($data);

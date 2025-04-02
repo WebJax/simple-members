@@ -16,14 +16,8 @@ document.addEventListener("DOMContentLoaded", function() {
                         data: {
                             labels: data.labels,
                             datasets: [{
-                                label: 'Antal ordrer',
-                                data: data.orders,
-                                backgroundColor: 'rgba(54, 162, 235, 0.5)',
-                                borderColor: 'rgba(54, 162, 235, 1)',
-                                borderWidth: 1
-                            }, {
-                                label: 'Antal solgte produkter',
-                                data: data.products,
+                                label: 'Antal medlemmer',
+                                data: data.products_sold,
                                 backgroundColor: 'rgba(255, 99, 132, 0.5)',
                                 borderColor: 'rgba(255, 99, 132, 1)',
                                 borderWidth: 1

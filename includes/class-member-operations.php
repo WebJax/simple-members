@@ -226,34 +226,57 @@ class MemberOperations {
     public function get_monthly_sales_last_year() {
         global $wpdb;
 
-        $one_year_ago = date('Y-m-01', strtotime('-11 months')); // Første dag i den ældste måned
-        $current_month = date('Y-m-01'); // Første dag i denne måned
-
+        $one_year_ago = date('Y-m-d', strtotime('-1 year')); // Dato for 1 år siden
+        $today = date('Y-m-d'); // Dagens dato
+        
+        // SQL-forespørgsel for at hente månedlige salg
         $query = $wpdb->prepare(
-            "SELECT DATE_FORMAT(created_at, '%%Y-%%m') as month, SUM(quantity) as total_sold 
-            FROM {SM_TABLE_NAME} 
-            WHERE created_at BETWEEN %s AND %s
-            GROUP BY month
+            "SELECT 
+                DATE_FORMAT(created_at, '%%Y-%%m') as month, 
+                SUM(quantity) as total_sold 
+            FROM 
+                {$wpdb->prefix}simple_members_orders
+            WHERE 
+                created_at BETWEEN %s AND %s 
+            GROUP BY month 
             ORDER BY month ASC",
             $one_year_ago,
-            $current_month
+            $today
         );
-
+        
         $results = $wpdb->get_results($query, ARRAY_A);
-
-        // Opret array med 0-værdier for alle måneder
-        $sales_data = [];
-        for ($i = 0; $i < 12; $i++) {
-            $month = date('Y-m', strtotime("-$i months"));
-            $sales_data[$month] = 0;
+        
+        // Debug output
+        error_log('Monthly sales query: ' . $query);
+        error_log('Monthly sales results: ' . print_r($results, true));
+        
+        // Opret array med 0-værdier for alle måneder i perioden
+        $months = array();
+        $current = new DateTime($one_year_ago);
+        $end = new DateTime($today);
+        $interval = DateInterval::createFromDateString('1 month');
+        $period = new DatePeriod($current, $interval, $end);
+        
+        foreach ($period as $dt) {
+            $month_key = $dt->format('Y-m');
+            $months[$month_key] = 0;
         }
-
+        
+        // Tilføj den aktuelle måned også
+        $current_month = date('Y-m');
+        $months[$current_month] = 0;
+        
         // Udfyld med faktiske data
-        foreach ($results as $row) {
-            $sales_data[$row['month']] = (int) $row['total_sold'];
+        if (!empty($results)) {
+            foreach ($results as $row) {
+                $months[$row['month']] = (int) $row['total_sold'];
+            }
         }
-
-        return array_reverse($sales_data, true); // Vend rækkefølgen, så den starter med ældste måned
+        
+        // Returnér dataene sorteret efter måned
+        ksort($months);
+        
+        return $months;
     }
 
     /**
