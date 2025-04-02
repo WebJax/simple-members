@@ -1,6 +1,8 @@
 document.addEventListener("DOMContentLoaded", function() {
     // Check if we're on the statistics page with the chart element
 
+    simple_members_params = smStats;
+
     initMembersGrowthChart();
     initMembersFlowChart();
 
@@ -52,7 +54,7 @@ document.addEventListener("DOMContentLoaded", function() {
         }
 
         // Hent data fra backend via AJAX - konverteret til fetch API
-        fetch(simple_members_params.ajax_url, {
+        fetch(simple_members_params.ajaxUrl, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded',
@@ -119,7 +121,7 @@ document.addEventListener("DOMContentLoaded", function() {
         }
 
         // Hent data fra backend via AJAX - konverteret til fetch API
-        fetch(simple_members_params.ajax_url, {
+        fetch(simple_members_params.ajaxUrl, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded',
