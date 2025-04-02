@@ -58,7 +58,7 @@ class AdminMenu {
             __( 'Statistik', 'simple-members' ),
             'manage_options',
             'statistics',
-            array( 'SubscriptionManager', 'render_page' )
+            array( 'MemberStatistics', 'render_page' )
         );
 
         add_submenu_page(

@@ -35,7 +35,7 @@ class MemberStatistics {
         <div class="sm-admin">
             <h1><?php _e( 'Medlemsstatistik', 'simple-members' ); ?></h1>
             <form method="get">
-                <input type="hidden" name="page" value="member_statistics">
+                <input type="hidden" name="page" value="statistics">
                 <label for="stats_start_date">Startdato: <input type="date" name="stats_start_date" value="<?php echo isset($_GET['stats_start_date']) ? esc_attr($_GET['stats_start_date']) : date('Y-m-d', strtotime('-1 year')); ?>"></label>
                 <label for="stats_end_date">Slutdato: <input type="date" name="stats_end_date" value="<?php echo isset($_GET['stats_end_date']) ? esc_attr($_GET['stats_end_date']) : date('Y-m-d'); ?>"></label>
                 <input type="submit" class="button button-primary" value="Opdater">

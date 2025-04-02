@@ -51,7 +51,7 @@ class MemberTable {
         <section class="wrap">
             <h2>Medlemmer</h2>
             <form method="get">
-                <input type="hidden" name="page" value="simple_members">
+                <input type="hidden" name="page" value="edit_members">
                 <label for="members_start_date">Startdato: <input type="date" name="members_start_date" value="<?php echo isset($_GET['members_start_date']) ? esc_attr($_GET['members_start_date']) : date('Y-m-01'); ?>"></label>
                 <label for="members_end_date">Slutdato: <input type="date" name="members_end_date" value="<?php echo isset($_GET['members_end_date']) ? esc_attr($_GET['members_end_date']) : date('Y-m-d'); ?>"></label>
                 <input type="submit" class="button button-primary" value="Opdater">
