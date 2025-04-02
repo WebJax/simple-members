@@ -49,7 +49,7 @@ class MemberTable {
     public static function show_members_table() {
         ?>
         <section class="wrap">
-            <h2>Medlemmer</h2>
+            <h2>Medlemmsperiode</h2>
             <form method="get">
                 <input type="hidden" name="page" value="edit_members">
                 <label for="members_start_date">Startdato: <input type="date" name="members_start_date" value="<?php echo isset($_GET['members_start_date']) ? esc_attr($_GET['members_start_date']) : date('Y-m-d', strtotime('-1 year')); ?>"></label>
@@ -96,7 +96,8 @@ class MemberTable {
             echo "<p>Ingen data i dette interval.</p>";
             return;
         }
-    
+        
+        echo '<div class="members-table-container">';
         echo '<table class="widefat striped members-table">';
         echo '<thead class="members-table-header"><tr><th>Medlem</th><th>Email</th><th>Ordre ID</th><th>Produkt</th><th>Antal</th><th>Købsdato</th><th>Status</th></tr></thead><tbody>';
     
@@ -120,7 +121,7 @@ class MemberTable {
             echo '</tr>';
         }
     
-        echo '</tbody></table>';
+        echo '</tbody></table></div>';
     }
 
     /**
